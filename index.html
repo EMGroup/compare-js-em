@@ -1,0 +1,248 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="node_modules/@construit/highlighter/css/construit-highlighter.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/@construit/scriptbox/css/interpreter.css">
+	<link rel="stylesheet" type="text/css" href="node_modules/@construit/scriptbox/css/gutter.css">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+	<script src="node_modules/@construit/scriptbox/construit-scriptbox.min.js"></script>
+	<script src="node_modules/@construit/runtime/construit-runtime.min.js"></script>
+	<script src="node_modules/esprima/dist/esprima.js"></script>
+	<script src="https://use.fontawesome.com/f172de12fc.js"></script>
+	<style>
+		body {
+			display: flex;
+			font-size: 20px;
+			font-family: "Roboto", Helvetica, arial;
+		}
+
+		#menu {
+			background: #eee;
+			padding: 20px;
+		}
+
+		#emtextin {
+			width: 50%;
+			padding: 20px;
+			font-size: 20px;
+			box-sizing: border-box;
+			overflow: auto;
+		}
+
+		#jstextin {
+			width: 50%;
+			padding: 20px;
+			font-size: 20px;
+			border-left: 4px solid silver;
+			box-sizing: border-box;
+			overflow: auto;
+		}
+
+	</style>
+</head>
+<body>
+	<script>
+		function jsparser(src) {
+			var errors = [];
+			var ast;
+
+			try {
+				ast = esprima.parse(src, {range: true});
+				console.log(ast);
+			} catch(e) {
+				errors.push(e);
+				e.line = e.lineNumber;
+				e.messageText = function() { return e.description; };
+			}
+			return {
+				ast: ast,
+				errors: errors,
+				hasErrors: function() { return (errors.length > 0); },
+				getError: function() { return errors[0]; },
+				source: src,
+				statements: [],
+				getStatementByLine: function() {}
+			}
+		}
+		function jstranslator(ast) {
+			eval(ast.source);
+		}
+		window.onload = function() {
+			var input = document.getElementById("emtextin");
+			var inputjs = document.getElementById("jstextin");
+
+			rt = new Construit.runtime.RunTime();
+			var embox = new Construit.ScriptBox(input, rt);
+
+			var jsbox = new Construit.ScriptBox(inputjs, rt, {
+				parser: {parse: jsparser},
+				translator: { eval: jstranslator },
+				keywords: {
+					"do": "do",
+					"if": "if",
+					"in": "in",
+					"for": "for",
+					"let": "let",
+					"new": "new",
+					"try": "try",
+					"var": "var",
+					"case": "case",
+					"else": "else",
+					"enum": "enum",
+					"this": "this",
+					"with": "with",
+					"await": "await",
+					"break": "break",
+					"catch": "catch",
+					"class": "class",
+					"const": "const",
+					"super": "super",
+					"throw": "throw",
+					"while": "while",
+					"yield": "yield",
+					"delete": "delete",
+					"export": "export",
+					"import": "import",
+					"public": "public",
+					"return": "return",
+					"static": "static",
+					"switch": "switch",
+					"typeof": "typeof",
+					"default": "default",
+					"extends": "extends",
+					"finally": "finally",
+					"package": "package",
+					"private": "private",
+					"continue": "continue",
+					"debugger": "debugger",
+					"function": "function",
+					"interface": "interface",
+					"protected": "protected",
+					"prototype": "prototype",
+					"implements": "implements",
+					"instanceof": "instanceof"
+				}
+			});
+		}
+	</script>
+
+	<div id="emtextin">pinlength = 25;
+height is 36 * board_scale;
+x1 is ard_uno_{pin1}["x"];
+y1 is ard_uno_{pin1}["y"];
+base_width is ard_uno_breaddist * 1.3;
+
+cathode is Line(x1+ard_uno_breaddist, y1,
+	x1+ard_uno_breaddist, y1 - pinlength, "silver");
+
+anode is Line(x1, y1, x1,
+	y1 - pinlength, "silver");
+
+colour_off is "#b81a1a" if colour == "red"
+	else "#329232" if colour == "green" else colour;
+colour_on is "#ff5757" if colour == "red"
+	else "#57ff57" if led_colour == "green" else colour;
+colour_map is colour_off if !on else colour_on;
+
+base is Ellipse(x1+ard_uno_breaddist/2,
+	y1- pinlength, base_width,
+	base_width*0.7, colour);
+
+top1 is Ellipse(x1+ard_uno_breaddist/2,
+	y1 - pinlength, base_width-3,
+	(base_width - 3)*0.7, colour_map);
+
+top2 is Circle(x1+ard_uno_breaddist/2,
+	y1 - pinlength - height, base_width-3,
+	colour_map, colour_map);
+
+top3 is Rectangle(
+	x1+ard_uno_breaddist/2 - (((base_width*2))/2)+3,
+	y1 - pinlength - height, (base_width-3)*2,
+	height, colour_map, colour_map);
+
+led is [anode, cathode, base, top1,
+	top2, top3];</div>
+
+	<div id="jstextin">function led(device, pin, colour, on) {
+	this.device = device;
+	this.pin = pin;
+	this.colour = colour;
+	this.on = on;
+	this.pinpoint = device.getPin(pin);
+}
+
+led.prototype.colourMap = function() {
+	let colourOff = (this.colour == "red") ? "#b81a1a" : 
+		(this.colour == "green") ? "#329232" : this.colour;
+	let colourOn = (this.colour == "red") ? "#ff5757" : 
+		(this.colour == "green") ? "#57ff57" : this.colour;
+	return (this.on) ? colourOn : colourOff;
+}
+
+led.prototype.baseWidth = function() {
+	return this.device.breadDistance() * 1.3;
+}
+
+led.prototype.pinLength = function() { return 25; }
+
+led.prototype.height = function() {
+	return 36 * this.device.boardScale();
+}
+
+led.prototype.cathode = function(canvas) {
+	return new canvas.Line(
+		this.pinpoint.x + this.device.breadDistance(),
+		this.pinpoint.y,
+		this.pinpoint.x + this.device.breadDistance(),
+		this.pinpoint.y - this.pinLength(),
+		"silver");
+}
+
+led.prototype.anode = function(canvas) {
+	return new canvas.Line(
+		this.pinpoint.x, this.pinpoint.y,
+		this.pinpoint.x, this.pinpoint.y - this.pinLength(),
+		"silver");
+}
+
+led.prototype.base = function(canvas) {
+	return new canvas.Ellipse(
+		this.pinpoint.x+ this.device.breadDistance() / 2,
+		this.pinpoint.y - this.pinLength(),
+		this.baseWidth(), this.baseWidth() * 0.7, this.colour);
+}
+
+led.prototype.top1 = function(canvas) {
+	return new canvas.Ellipse(
+		this.pinpoint.x+this.device.breadDistance() / 2,
+		this.pinpoint.y - this.pinLength,
+		this.baseWidth() - 3, (this.baseWidth() - 3) * 0.7, 
+		this.colourMap());
+}
+
+led.prototype.top2 = function(canvas) {
+	return new canvas.Circle(
+		this.pinpoint.x+this.device.breadDistance() / 2,
+		this.pinpoint.y - this.pinLength() - this.height(),
+		this.baseWidth() - 3, this.colourMap(), this.colourMap());
+}
+
+led.prototype.top3 = function(canvas) {
+	return new canvas.Rectangle(
+		this.pinpoint.x+this.device.breadDistance() / 2 -
+			(this.baseWidth()*2)/2 + 3,
+		this.pinpoint.y - this.pinLength() - height,
+		(this.baseWidth() - 3)*2,
+		this.height(), this.colourMap(), this.colourMap());
+}
+
+led.prototype.drawables = function(canvas) {
+	return [this.anode(canvas), this.cathode(canvas),
+		this.base(canvas), this.top1(canvas),
+		this.top2(canvas), this.top3(canvas)];
+}
+</div>
+</body>
+</html>
+
