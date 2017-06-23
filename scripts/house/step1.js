@@ -26,17 +26,14 @@ myhouse = house(100,100, {floors: 4});
 myhouse = house(100,100, {roofHeight: 10});
 
 #### Case 4
-# Not possible
-
+# Not possible without complete rewrite
 
 #### Case 5
-# Not possible
-
+# Not possible without complete rewrite
 
 #### Case 6
-# Not possible
-
+# Not possible without complete rewrite
 
 #### Case 7
-# Not possible
+# Not possible without complete rewrite
 
