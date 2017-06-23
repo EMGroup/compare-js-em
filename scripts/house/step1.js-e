@@ -1,0 +1,46 @@
+## Program
+### Inputs
+houseX is $1;
+houseY is $2;
+
+### Optional Inputs
+floorHeight = 40;
+floors = 2;
+houseWidth = 200;
+roofHeight is houseWidth * 0.5;
+
+### Internals
+roofX is houseX;
+roofY is houseY + roofHeight;
+roof is Triangle(roofX, roofY, roofHeight, houseWidth);
+blockHeight is floorHeight * floors;
+houseBlock is Rectangle(houseX, roofY, houseWidth, blockHeight);
+
+### Output
+house is [houseBlock, roof];
+
+
+## Usage
+#### Case 1
+myhouse is house(100,100);
+
+#### Case 2
+myhouse is house(100,100, floors = 4);
+
+#### Case 3
+myhouse is house(100,100, roofHeight=10);
+
+#### Case 4
+myhouse is house(100,100,
+	roof is Triangle(roofX-50, roofY, roofHeight, houseWidth+100));
+
+#### Case 5
+roof is Triangle(roofX-50, roofY, roofHeight, houseWidth+100);
+myhouse = house(100,100);
+
+#### Case 6
+floors is ceil(houseWidth / floorHeight);
+myhouse = house(100,100);
+
+#### Case 7
+myhouse = house(100,100, Triangle = OutlineTriangle);

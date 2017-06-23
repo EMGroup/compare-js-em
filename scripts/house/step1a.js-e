@@ -1,0 +1,39 @@
+### Inputs
+houseX is $1;
+houseY is $2;
+
+### Optional Inputs
+floorHeight = 40;
+floors = 2;
+houseWidth = 200;
+roofHeight is houseWidth * 0.5;
+
+### Output
+house is [Rectangle(houseX, houseY + roofHeight, houseWidth, floorHeight * floors), 
+	Triangle(houseX, houseY + roofHeight, roofHeight, houseWidth)];
+
+
+## Usage
+#### Case 1
+myhouse is house(100,100);
+
+#### Case 2
+myhouse is house(100,100, floors = 4);
+
+#### Case 3
+myhouse is house(100,100, roofHeight=10);
+
+#### Case 4
+# Not possible
+
+#### Case 5
+# Not possible
+
+
+#### Case 6
+floors is ceil(houseWidth / floorHeight);
+myhouse = house(100,100);
+
+#### Case 7
+myhouse = house(100,100, Triangle = OutlineTriangle);
+

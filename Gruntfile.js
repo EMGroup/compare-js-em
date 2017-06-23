@@ -16,6 +16,7 @@ module.exports = function (grunt) {
 	'gh-pages': {
 		src: ['index.html',
 				'scripts/**',
+				'.nojekyll',
 				'node_modules/@construit/highlighter/css/construit-highlighter.css',
 				'node_modules/@construit/scriptbox/css/interpreter.css',
 				'node_modules/@construit/scriptbox/css/gutter.css',
