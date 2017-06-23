@@ -1,8 +1,8 @@
-/* Inputs */
+## Program 3 - Refactor All Locals
+
 function house(x,y) {
 	this.houseX = x;
 	this.houseY = y;
-
 	/* Optional Inputs */
 	this.floorHeight = 40;
 	this.floors = 2;
@@ -17,6 +17,8 @@ house.prototype.roof = function() {
 	return Triangle(this.houseX,this.roofY(),this.roofHeight(),
 		this.houseWidth);
 }
+
+# Move all remaining locals in `drawables` to functions.
 
 house.prototype.roofY = function() {
 	return this.houseY + this.roofHeight();
@@ -35,39 +37,46 @@ house.prototype.drawables = function() {
 	return [this.houseBlock(), this.roof()];
 }
 
-/* Usage */
-/* Case 1*/
+### Use and Reuse
+#### Case 1
 myhouse_inst = new house(100,100);
 myhouse = myhouse_inst.drawables();
 
-/* Case 2*/
+#### Case 2
 myhouse_inst = new house(100,100);
 myhouse_inst.floors = 4;
 myhouse = myhouse_inst.drawables();
 
-/* Case 3*/
+#### Case 3
 myhouse_inst = new house(100,100);
 myhouse_inst.roofHeight = function() { return 10; };
 myhouse = myhouse_inst.drawables();
 
-/* Case 4*/
+#### Case 4
 myhouse_inst = new house(100,100);
-myhouse_inst.roof = function() {
-	return Triangle(this.houseX-50,this.roofY(),this.roofHeight(),
+myhouse_inst.roof = function(roofY) {
+	return Triangle(this.houseX-50,roofY,this.roofHeight(),
 		this.houseWidth+100);
 }
 myhouse = myhouse_inst.drawables();
 
-/* Case 5*/
-house.prototype.roof = function() {
-	return Triangle(this.houseX-50,this.roofY(),this.roofHeight(),
+#### Case 5
+house.prototype.roof = function(roofY) {
+	return Triangle(this.houseX-50,roofY,this.roofHeight(),
 		this.houseWidth+100);
 }
 myhouse_inst = new house(100,100);
 myhouse = myhouse_inst.drawables();
 
-/* Case 6*/
-/* Not possible without changing everything using floors*/
+#### Case 6
+# Possible but potentially unsafe if values are changed in the wrong order
 
-/* Case 7*/
-/* Not Possible, needs dependency injection */
+myhouse_inst = new house(100,100);
+myhouse_inst.floors = Math.ceil(
+	myhouse_inst.houseWidth / myhouse_inst.floorHeight);
+myhouse = myhouse_inst.drawables();
+
+#### Case 7
+# Not Possible without rewriting drawables
+
+
