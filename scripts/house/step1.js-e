@@ -44,3 +44,8 @@ myhouse = house(100,100);
 
 #### Case 7
 myhouse = house(100,100, Triangle = OutlineTriangle);
+
+#### Case 8
+# TODO Parameter changes need pass-through
+
+

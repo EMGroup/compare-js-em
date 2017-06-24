@@ -57,6 +57,7 @@
 			box-sizing: border-box;
 			overflow: auto;
 			box-shadow: 0 0 10px black;
+			background: #f3f0da;
 		}
 
 		#jstextin {
@@ -66,6 +67,7 @@
 			box-sizing: border-box;
 			overflow: auto;
 			box-shadow: 0 0 10px black;
+			background: #f3f0da;
 		}
 
 	</style>
@@ -98,12 +100,35 @@
 			src = src.split("\n").map(function(x) {
 				if (x.startsWith("#")) return "";
 				else return x;
-			});
+			}); //.join("\n");
+
+			var lines = [];
+			lines[0] = 0;
+			for (var i=1; i<src.length; i++) {
+				lines[i] = lines[i-1] + src[i-1].length + 1;
+			}
+			var curline = 0;
+
+			src = src.join("\n");
+			
+			var statements = {};
 
 			try {
 				ast = esprima.parse(src, {range: true});
-				console.log(ast);
+				//console.log(ast);
+
+				for (var i=0; i<ast.body.length; i++) {
+					while (lines.length > curline+1 && ast.body[i].range[0] >= lines[curline+1]) {
+						curline++;
+					}
+					statements[curline] = ast.body[i];
+					ast.body[i].source = src.substr(ast.body[i].range[0], ast.body[i].range[1]);
+				}
+
+				console.log(statements);
+
 			} catch(e) {
+				console.log(e);
 				errors.push(e);
 				e.line = e.lineNumber;
 				e.messageText = function() { return e.description; };
@@ -115,7 +140,7 @@
 				getError: function() { return errors[0]; },
 				source: src,
 				statements: [],
-				getStatementByLine: function() {}
+				getStatementByLine: function(line) { return statements[line]; }
 			}
 		}
 		function jstranslator(ast) {
