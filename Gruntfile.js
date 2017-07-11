@@ -15,18 +15,20 @@ module.exports = function (grunt) {
   grunt.initConfig({
 	'gh-pages': {
 		src: ['index.html',
+				'compare-js-em.js',
 				'scripts/**',
 				'.nojekyll',
 				'node_modules/@construit/highlighter/css/construit-highlighter.css',
 				'node_modules/@construit/scriptbox/css/interpreter.css',
-				'node_modules/@construit/scriptbox/css/gutter.css',
-				'node_modules/@construit/scriptbox/construit-scriptbox.min.js',
-				'node_modules/@construit/runtime/construit-runtime.min.js',
-				'node_modules/esprima/dist/esprima.js']
+				'node_modules/@construit/scriptbox/css/gutter.css']
 	},
+	browserify: {
+		'compare-js-em.js': ['index.js']
+	}
   });
 
   grunt.loadNpmTasks('grunt-gh-pages');
-  grunt.registerTask('default', ['gh-pages']);
+  grunt.loadNpmTasks('grunt-browserify');
+  grunt.registerTask('default', ['browserify']);
 };
 

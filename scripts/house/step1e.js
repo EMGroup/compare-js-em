@@ -1,6 +1,6 @@
 ## Program 4 - Refactor Floors Member
 
-function house(x,y) {
+house = function (x,y) {
 	this.houseX = x;
 	this.houseY = y;
 	/* Optional Inputs */

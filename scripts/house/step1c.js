@@ -1,6 +1,6 @@
 ## Program 2 - OO Refactor Roof
 
-function house(x,y) {
+house = function (x,y) {
 	this.houseX = x;
 	this.houseY = y;
 	/* Optional Inputs */
@@ -15,9 +15,9 @@ house.prototype.roofHeight = function() {
 
 # Move `roof` to a separate function instead of being a hidden local
 
-house.prototype.roof = function(roofY) {
-	return Triangle(this.houseX,roofY,this.roofHeight(),
-		this.houseWidth);
+house.prototype.roof = function() {
+	return Triangle(this.houseX,this.houseY,
+		this.houseWidth, this.roofHeight());
 }
 
 house.prototype.drawables = function() {
@@ -26,7 +26,7 @@ house.prototype.drawables = function() {
 	let houseBlock = Rectangle(this.houseX,roofY,
 		this.houseWidth,blockHeight);
 
-	return [houseBlock, this.roof(roofY)];
+	return [houseBlock, this.roof()];
 }
 
 ### Use and Reuse
@@ -46,16 +46,16 @@ myhouse = myhouse_inst.drawables();
 
 #### Case 4
 myhouse_inst = new house(100,100);
-myhouse_inst.roof = function(roofY) {
-	return Triangle(this.houseX-50,roofY,this.roofHeight(),
-		this.houseWidth+100);
+myhouse_inst.roof = function() {
+	return Triangle(this.houseX-50,this.houseY,
+		this.houseWidth+100, this.roofHeight());
 }
 myhouse = myhouse_inst.drawables();
 
 #### Case 5
-house.prototype.roof = function(roofY) {
-	return Triangle(this.houseX-50,roofY,this.roofHeight(),
-		this.houseWidth+100);
+house.prototype.roof = function() {
+	return Triangle(this.houseX-50,this.houseY,
+		this.houseWidth+100, this.roofHeight());
 }
 myhouse_inst = new house(100,100);
 myhouse = myhouse_inst.drawables();

@@ -5,9 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="node_modules/@construit/scriptbox/css/gutter.css">
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
-	<script src="node_modules/@construit/scriptbox/construit-scriptbox.min.js"></script>
-	<script src="node_modules/@construit/runtime/construit-runtime.min.js"></script>
-	<script src="node_modules/esprima/dist/esprima.js"></script>
+	<script src="compare-js-em.js"></script>
 	<script src="https://use.fontawesome.com/f172de12fc.js"></script>
 
 	<style>
@@ -70,172 +68,94 @@
 			background: #f3f0da;
 		}
 
+		#image1 {
+			position: absolute;
+			left: calc(50% - 300px);
+			top: 100px;
+		}
+
+		#image2 {
+			position: absolute;
+			right: 10px;
+			top: 100px;
+		}
+
 	</style>
 </head>
 <body>
-	<script>
-		function ajax(options) {
-			var xhr = new XMLHttpRequest();
-			//xhr.withCredentials = true;
-			xhr.open(options.type.toUpperCase(), options.url);
-			//xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.onload = function() {
-				if (xhr.status === 200 || xhr.status == 0) {
-					var data;
-					if (xhr.responseText.charAt(0) == "{" || xhr.responseText.charAt(0) == "[") data = JSON.parse(xhr.responseText);
-					else data = xhr.responseText;
-					options.success(data);
-				} else {
-					options.error(xhr, xhr.status, xhr.responseText);
-				}
-			};
-			xhr.send((options.data) ? JSON.stringify(options.data) : undefined);
-		}
+<!--script>
+myhouse = [];
 
-		function jsparser(src) {
-			var errors = [];
-			var ast;
+function Triangle(x,y,width,height,colour) {
+	var ele = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+	var points =  "" + x + " " + (y+height) + ", " + (x+width/2) + " " + y + ", " + (x+width) + " " + (y+height);
+	ele.setAttribute("points", points);
+	ele.setAttribute("style", "fill: "+((colour) ? colour : "black")+";");
+	return ele;
+}
 
-			// Filter out markdown comments
-			src = src.split("\n").map(function(x) {
-				if (x.startsWith("#")) return "";
-				else return x;
-			}); //.join("\n");
+function Rectangle(x,y,width,height,colour) {
+	var ele = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	ele.setAttribute("x", x);
+	ele.setAttribute("y", y);
+	ele.setAttribute("width", width);
+	ele.setAttribute("height", height);
+	ele.setAttribute("style", "fill: "+((colour) ? colour : "black")+";");
+	return ele;
+}
 
-			var lines = [];
-			lines[0] = 0;
-			for (var i=1; i<src.length; i++) {
-				lines[i] = lines[i-1] + src[i-1].length + 1;
-			}
-			var curline = 0;
+house = function (houseX, houseY, options) {
+	if (!options) options={};
+	let floorHeight = options.floorHeight||40;
+	let floors = options.floors||2;
+	let houseWidth = options.houseWidth||200;
+	let roofHeight = options.roofHeight||houseWidth * 0.5;
 
-			src = src.join("\n");
-			
-			var statements = {};
+	let roofY = houseY + roofHeight;
+	let roof = Triangle(houseX,houseY,houseWidth,roofHeight);
+	let blockHeight = floorHeight * floors;
+	let houseBlock = Rectangle(houseX,roofY,houseWidth,blockHeight);
 
-			try {
-				ast = esprima.parse(src, {range: true});
-				//console.log(ast);
+	return [houseBlock, roof];
+}
 
-				for (var i=0; i<ast.body.length; i++) {
-					while (lines.length > curline+1 && ast.body[i].range[0] >= lines[curline+1]) {
-						curline++;
-					}
-					statements[curline] = ast.body[i];
-					ast.body[i].source = src.substr(ast.body[i].range[0], ast.body[i].range[1]);
-				}
+myhouse = house(0,0);
 
-				console.log(statements);
+setInterval(function() {
+	var svg1 = document.getElementById("image2");
+	if (!svg1 || !myhouse) return;
+	while (svg1.lastChild) svg1.removeChild(svg1.lastChild);
 
-			} catch(e) {
-				console.log(e);
-				errors.push(e);
-				e.line = e.lineNumber;
-				e.messageText = function() { return e.description; };
-			}
-			return {
-				ast: ast,
-				errors: errors,
-				hasErrors: function() { return (errors.length > 0); },
-				getError: function() { return errors[0]; },
-				source: src,
-				statements: [],
-				getStatementByLine: function(line) { return statements[line]; }
-			}
-		}
-		function jstranslator(ast) {
-			eval(ast.source);
-		}
-		window.onload = function() {
-			var input = document.getElementById("emtextin");
-			var inputjs = document.getElementById("jstextin");
+	for (var i=0; i<myhouse.length; i++) {
+		svg1.appendChild(myhouse[i]);
+	}
+}, 400);
+</script>
+<script type="text/construit" data-mount="image1">
+use lib > svg > :(Rectangle);
+image1 is <svg width="300" height="300">{myhouse}</svg>;
 
-			rt = new Construit.runtime.RunTime();
-			var embox = new Construit.ScriptBox(input, rt);
+triangle_points is "" // $1 // " " // ($2+$4) // ", " // ($1+$3/2) // " " // $2 // ", " // ($1+$3) // " " // ($2+$4);
+Triangle is <polygon xmlns="http://www.w3.org/2000/svg" points={triangle_points} style={"fill: "//($5 if $5 else "black")//";"} />; 
 
-			var jsbox = new Construit.ScriptBox(inputjs, rt, {
-				parser: {parse: jsparser},
-				translator: { eval: jstranslator },
-				keywords: {
-					"do": "do",
-					"if": "if",
-					"in": "in",
-					"for": "for",
-					"let": "let",
-					"new": "new",
-					"try": "try",
-					"var": "var",
-					"case": "case",
-					"else": "else",
-					"enum": "enum",
-					"this": "this",
-					"with": "with",
-					"await": "await",
-					"break": "break",
-					"catch": "catch",
-					"class": "class",
-					"const": "const",
-					"super": "super",
-					"throw": "throw",
-					"while": "while",
-					"yield": "yield",
-					"delete": "delete",
-					"export": "export",
-					"import": "import",
-					"public": "public",
-					"return": "return",
-					"static": "static",
-					"switch": "switch",
-					"typeof": "typeof",
-					"default": "default",
-					"extends": "extends",
-					"finally": "finally",
-					"package": "package",
-					"private": "private",
-					"continue": "continue",
-					"debugger": "debugger",
-					"function": "function",
-					"interface": "interface",
-					"protected": "protected",
-					"prototype": "prototype",
-					"implements": "implements",
-					"instanceof": "instanceof"
-				}
-			});
+houseX is $1;
+houseY is $2;
 
-			var jsoptions = document.getElementById("jsoptions");
-			jsoptions.onchange = function(e) {
-				ajax({
-					url: jsoptions.value,
-					type: "get",
-					success: function(data){
-						jsbox.intextarea.value = data;
-						jsbox.updateEntireHighlight();
-					},
-					error: function(a){
-						
-					}
-				});
-			}
-			jsoptions.onchange();
+floorHeight = 40;
+floors = 2;
+houseWidth = 200;
+roofHeight is houseWidth * 0.5;
 
-			var emoptions = document.getElementById("emoptions");
-			emoptions.onchange = function(e) {
-				ajax({
-					url: emoptions.value,
-					type: "get",
-					success: function(data){
-						embox.intextarea.value = data;
-						embox.updateEntireHighlight();
-					},
-					error: function(a){
-						
-					}
-				});
-			}
-			emoptions.onchange();
-		}
-	</script>
+roofX is houseX;
+roofY is houseY + roofHeight;
+roof is Triangle(roofX, houseY, houseWidth, roofHeight);
+blockHeight is floorHeight * floors;
+houseBlock is Rectangle(houseX, roofY, houseWidth, blockHeight);
+
+house is [houseBlock, roof];
+
+myhouse is house(0,0);
+</script-->
 
 	<div id="menu">
 		<div id="emmenu"><b>ConstruitScript</b><br>
@@ -261,6 +181,9 @@
 		<div id="emtextin"></div>
 		<div id="jstextin"></div>
 	</div>
+	<div id="image1"></div>
+	<svg xmlns="http://www.w3.org/2000/svg" width=300 height=300 id="image2"></svg>
+
 </body>
 </html>
 

@@ -12,6 +12,10 @@
     "@construit/scriptbox": "^1.0.0",
     "esprima": "^4.0.0",
     "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
     "grunt-gh-pages": "^2.0.0"
+  },
+  "dependencies": {
+    "@construit/web": "^1.0.1"
   }
 }
