@@ -1,6 +1,6 @@
 ## Program 1 - Single Function
 
-function house(houseX, houseY, options) {
+house = function (houseX, houseY, options) {
 	if (!options) options={};
 	let floorHeight = options.floorHeight||40;
 	let floors = options.floors||2;
@@ -8,7 +8,7 @@ function house(houseX, houseY, options) {
 	let roofHeight = options.roofHeight||houseWidth * 0.5;
 
 	let roofY = houseY + roofHeight;
-	let roof = Triangle(houseX,roofY,roofHeight,houseWidth);
+	let roof = Triangle(houseX,houseY,houseWidth,roofHeight);
 	let blockHeight = floorHeight * floors;
 	let houseBlock = Rectangle(houseX,rootY,houseWidth,blockHeight);
 

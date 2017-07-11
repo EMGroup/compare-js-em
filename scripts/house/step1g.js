@@ -1,5 +1,5 @@
 /* Inputs */
-function house(x,y) {
+house = function (x,y) {
 	this.houseX = x;
 	this.houseY = y;
 }

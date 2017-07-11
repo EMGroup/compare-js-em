@@ -1,6 +1,6 @@
 ## Program 2 - Naive Object-Oriented
 
-function house(x,y) {
+house = function (x,y) {
 	this.houseX = x;
 	this.houseY = y;
 	/* Optional Inputs */
@@ -15,8 +15,8 @@ house.prototype.roofHeight = function() {
 
 house.prototype.drawables = function() {
 	let roofY = this.houseY + this.roofHeight();
-	let roof = Triangle(this.houseX,roofY,this.roofHeight(),
-		this.houseWidth);
+	let roof = Triangle(this.houseX,this.houseY,
+		this.houseWidth,this.roofHeight());
 	let blockHeight = this.floorHeight * this.floors;
 	let houseBlock = Rectangle(this.houseX,roofY,
 		this.houseWidth,blockHeight);

@@ -1,6 +1,6 @@
 ## Program 3 - Refactor All Locals
 
-function house(x,y) {
+house = function (x,y) {
 	this.houseX = x;
 	this.houseY = y;
 	/* Optional Inputs */

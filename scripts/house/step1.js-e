@@ -12,7 +12,7 @@ roofHeight is houseWidth * 0.5;
 ### Internals
 roofX is houseX;
 roofY is houseY + roofHeight;
-roof is Triangle(roofX, roofY, roofHeight, houseWidth);
+roof is Triangle(roofX, houseY, houseWidth, roofHeight);
 blockHeight is floorHeight * floors;
 houseBlock is Rectangle(houseX, roofY, houseWidth, blockHeight);
 
@@ -22,28 +22,28 @@ house is [houseBlock, roof];
 
 ## Usage
 #### Case 1
-myhouse is house(100,100);
+myhouse is house(0,0);
 
 #### Case 2
-myhouse is house(100,100, floors = 4);
+myhouse is house(0,0, floors = 4);
 
 #### Case 3
-myhouse is house(100,100, roofHeight=10);
+myhouse is house(0,0, roofHeight=10);
 
 #### Case 4
-myhouse is house(100,100,
+myhouse is house(0,0,
 	roof is Triangle(roofX-50, roofY, roofHeight, houseWidth+100));
 
 #### Case 5
 roof is Triangle(roofX-50, roofY, roofHeight, houseWidth+100);
-myhouse = house(100,100);
+myhouse = house(0,0);
 
 #### Case 6
 floors is ceil(houseWidth / floorHeight);
-myhouse = house(100,100);
+myhouse = house(0,0);
 
 #### Case 7
-myhouse = house(100,100, Triangle = OutlineTriangle);
+myhouse = house(0,0, Triangle = OutlineTriangle);
 
 #### Case 8
 # TODO Parameter changes need pass-through
